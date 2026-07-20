@@ -3,24 +3,45 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class contents extends Model
+class Contents extends Model
 {
-    // 1. Definisikan nama tabel yang ada di database Anda
     protected $table = 'contents';
 
-    // 2. Tentukan kolom mana saja yang boleh diisi (Mass Assignment)
+    // Sesuaikan 100% dengan skema kolom pada gambar phpMyAdmin Anda
     protected $fillable = [
-        'name',
-        'slug',
+        'category_id', // Bisa diisi ID utama atau diabaikan karena kita memakai pivot
+        'title',
+        'ustadz',
+        'description',
+        'video_source',
+        'video_url',
+        'file_name',
+        'file_size_mb',
+        'thumbnail',
+        'duration_label',
+        'status',
+        'views',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
+        'file_size_mb' => 'double',
+        'views' => 'integer',
     ];
 
     /**
-     * Relasi ke tabel contents (Satu kategori memiliki banyak konten)
+     * Relasi Multi Kategori via Tabel Pivot Custom
      */
-    public function contents(): HasMany
+    public function categories(): BelongsToMany
     {
-        return $this->hasMany(Content::class, 'category_id', 'id');
+        return $this->belongsToMany(
+            CategoryContent::class,
+            'category_content',     // Nama tabel pivot fisiknya
+            'content_id',           // Foreign key untuk tabel contents
+            'category_id'           // Foreign key untuk tabel categories
+        )->using(PivotCategoryContent::class)->withTimestamps();
     }
 }

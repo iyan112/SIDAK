@@ -9,33 +9,35 @@ use Illuminate\Support\Str;
 class CategoryContentsController extends Controller
 {
     // GET /api/categories
+    // GET /api/categories
     public function index()
     {
         return response()->json(
-            CategoryContent::latest()->get()
+            // 'contents' adalah nama fungsi relasi pivot yang ada di model CategoryContent Anda
+            CategoryContent::withCount('contents')->latest()->get()
         );
     }
 
     // POST /api/categories
     public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255|unique:categories,name'
-    ], [
-        'name.required' => 'Nama kategori wajib diisi.',
-        'name.unique' => 'Kategori sudah ada.'
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name'
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.unique' => 'Kategori sudah ada.'
+        ]);
 
-    $category = CategoryContent::create([
-        'name' => $request->name,
-        'slug' => Str::slug($request->name)
-    ]);
+        $category = CategoryContent::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name)
+        ]);
 
-    return response()->json([
-        'message' => 'Kategori berhasil ditambahkan',
-        'category' => $category
-    ], 201);
-}
+        return response()->json([
+            'message' => 'Kategori berhasil ditambahkan',
+            'category' => $category
+        ], 201);
+    }
 
     // GET /api/categories/{id}
     public function show(CategoryContent $category)
@@ -47,17 +49,17 @@ class CategoryContentsController extends Controller
     public function update(Request $request, CategoryContent $category)
     {
         $request->validate([
-            'name'=>'required|string|max:255|unique:categories,name,'.$category->id
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id
         ]);
 
         $category->update([
-            'name'=>$request->name,
-            'slug'=>Str::slug($request->name)
+            'name' => $request->name,
+            'slug' => Str::slug($request->name)
         ]);
 
         return response()->json([
-            'message'=>'Kategori berhasil diubah',
-            'category'=>$category
+            'message' => 'Kategori berhasil diubah',
+            'category' => $category
         ]);
     }
 
@@ -67,7 +69,7 @@ class CategoryContentsController extends Controller
         $category->delete();
 
         return response()->json([
-            'message'=>'Kategori berhasil dihapus'
+            'message' => 'Kategori berhasil dihapus'
         ]);
     }
 }

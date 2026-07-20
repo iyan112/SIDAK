@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\CategoryContentsController;
+use App\Http\Controllers\ContentsController;
 
 Route::post('/login', function (Request $request) {
     $credentials = $request->validate([
@@ -22,7 +23,7 @@ Route::post('/login', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', fn (Request $request) => $request->user());
+    Route::get('/user', fn(Request $request) => $request->user());
 
     Route::post('/logout', function (Request $request) {
         Auth::guard('web')->logout();
@@ -33,3 +34,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::apiResource('categories', CategoryContentsController::class);
+Route::apiResource('contents', ContentsController::class);
